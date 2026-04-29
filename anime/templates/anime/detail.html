@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ anime.name }} - Anime Detail</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f1117;
+            color: #e6e6e6;
+            margin: 0;
+        }
+
+        .anime-detail {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: #1a1d26;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+            padding: 32px;
+        }
+
+        .anime-header {
+            display: flex;
+            gap: 32px;
+        }
+
+        .anime-image img {
+            width: 260px;
+            height: 360px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.7);
+        }
+
+        .anime-info {
+            flex: 1;
+        }
+
+        .anime-title {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .anime-rating {
+            color: #ffd369;
+            font-size: 1.2em;
+            margin-bottom: 16px;
+        }
+
+        .anime-meta {
+            margin-bottom: 10px;
+            color: #bbb;
+        }
+
+        .label {
+            color: #888;
+            font-weight: bold;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #2a2f3a;
+            padding: 5px 10px;
+            border-radius: 8px;
+            margin: 3px;
+            font-size: 0.85em;
+        }
+
+        .anime-synopsis {
+            margin-top: 30px;
+            line-height: 1.7;
+            color: #d0d0d0;
+        }
+
+        .anime-synopsis h3 {
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #4ea1ff;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* subtle hover polish */
+        .anime-detail:hover {
+            transform: translateY(-2px);
+            transition: 0.2s ease;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="anime-detail">
+
+        <div class="anime-header">
+
+            <!-- Poster -->
+            <div class="anime-image">
+                {% if anime.image %}
+                    <img src="{{ anime.image.url }}" alt="{{ anime.name }}">
+                {% else %}
+                    <div style="width:260px;height:360px;background:#2a2f3a;display:flex;align-items:center;justify-content:center;border-radius:10px;">
+                        No Image
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Info -->
+            <div class="anime-info">
+                <div class="anime-title">{{ anime.name }}</div>
+
+                {% if anime.rating %}
+                    <div class="anime-rating">⭐ {{ anime.rating }}</div>
+                {% endif %}
+
+                <div class="anime-meta">
+                    <span class="label">Type:</span> {{ anime.get_type_display }}
+                </div>
+
+                <div class="anime-meta">
+                    <span class="label">Status:</span> {{ anime.get_status_display }}
+                </div>
+
+                {% if anime.episodes %}
+                <div class="anime-meta">
+                    <span class="label">Episodes:</span> {{ anime.episodes }}
+                </div>
+                {% endif %}
+
+                {% if anime.release_date %}
+                <div class="anime-meta">
+                    <span class="label">Release:</span> {{ anime.release_date }}
+                </div>
+                {% endif %}
+
+                <!-- Studios -->
+                {% if anime.studios.all %}
+                <div class="anime-meta">
+                    <span class="label">Studios:</span><br>
+                    {% for studio in anime.studios.all %}
+                        <span class="tag">{{ studio.name }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Themes -->
+                {% if anime.themes.all %}
+                <div class="anime-meta">
+                    <span class="label">Themes:</span><br>
+                    {% for theme in anime.themes.all %}
+                        <span class="tag">{{ theme.name }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Synopsis -->
+        <div class="anime-synopsis">
+            <h3>Synopsis</h3>
+            <p>{{ anime.synopsis }}</p>
+        </div>
+
+        <a href="/" class="back-link">← Back to list</a>
+
+    </div>
+</body>
+</html>
