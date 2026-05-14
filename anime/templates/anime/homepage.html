@@ -129,9 +129,13 @@
                     <!-- Bottom overlay -->
                     <div class="overlay">
                         <div class="title">{{ anime.name }}</div>
-                        {% if anime.rating %}
-                            <div class="rating">⭐ {{ anime.rating }}</div>
-                        {% endif %}
+                        {% with avg=anime.average_user_rating %}
+                            {% if avg %}
+                                <div class="rating">⭐ {{ avg }}</div>
+                            {% else %}
+                                <div class="rating">⭐ No ratings yet</div>
+                            {% endif %}
+                        {% endwith %}
                     </div>
 
                     <!-- Hover info -->

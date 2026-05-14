@@ -1,3 +1,4 @@
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
 class Studio(models.Model):
@@ -6,6 +7,10 @@ class Studio(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Studio"
+        verbose_name_plural = "Studios"
+        ordering = ['name']
 
 class Theme(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -13,10 +18,30 @@ class Theme(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Theme"
+        verbose_name_plural = "Themes"
+        ordering = ['name']
+        
+class UserRating(models.Model):
+    anime = models.ForeignKey('Anime', related_name='user_ratings', on_delete=models.CASCADE)
+    user_name = models.CharField(max_length=100)
+    rating = models.FloatField(
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
+    text = models.TextField()
+
+    def __str__(self):
+        return f"{self.user_name} - {self.anime.name} ({self.rating})"
+
+    class Meta:
+        verbose_name = "User Rating"
+        verbose_name_plural = "User Ratings"
+        ordering = ['anime', 'user_name']
 
 class Anime(models.Model):
     STATUS_CHOICES = [
-        ("airing", "Currently Airing"),
+        ("Airing", "Currently Airing"),
         ("finished", "Finished"),
         ("upcoming", "Upcoming"),
     ]
@@ -30,13 +55,19 @@ class Anime(models.Model):
     ]
 
     name = models.CharField(max_length=200, unique=True)
-    rating = models.FloatField(null=True, blank=True)
+    rating = models.FloatField(
+        null=True, blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(10)]
+    )
     image = models.ImageField(upload_to="anime_images/")
     synopsis = models.TextField()
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
     release_date = models.DateField(null=True, blank=True)
-    episodes = models.IntegerField(null=True, blank=True)
+    episodes = models.IntegerField(
+        null=True, blank=True,
+        validators=[MinValueValidator(1)]
+    )
 
     type = models.CharField(max_length=20, choices=TYPE_CHOICES)
 
@@ -45,3 +76,14 @@ class Anime(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = "Anime"
+        verbose_name_plural = "Anime"
+        ordering = ['name']
+        
+    def average_user_rating(self):
+        ratings = self.user_ratings.all()
+        if ratings.exists():
+            return round(sum(r.rating for r in ratings) / ratings.count(), 2)
+        return None
