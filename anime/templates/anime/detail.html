@@ -226,7 +226,7 @@
             {% if ratings %}
                 {% for review in ratings %}
                     <div class="review">
-                        <span class="review-user">{{ review.user_name }}</span>
+                        <span class="review-user">{{ review.user.username }}</span>
                         <span class="review-rating">({{ review.rating }}/10)</span>
                         <div class="review-text">{{ review.text|linebreaks }}</div>
                     </div>
@@ -238,11 +238,17 @@
             <!-- Review Form -->
             <div class="review-form">
                 <h3>Leave a Review</h3>
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit">Submit Review</button>
-                </form>
+                {% if user.is_authenticated %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit">Submit Review</button>
+                    </form>
+                {% else %}
+                    <p style="color: #bbb;">
+                        <a href="{% url 'login' %}" style="color: #4ea1ff;">Login</a> to leave a review.
+                    </p>
+                {% endif %}
             </div>
         </div>
 

@@ -1,5 +1,6 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from django.contrib.auth.models import User
 
 class Studio(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -25,19 +26,19 @@ class Theme(models.Model):
         
 class UserRating(models.Model):
     anime = models.ForeignKey('Anime', related_name='user_ratings', on_delete=models.CASCADE)
-    user_name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     rating = models.FloatField(
         validators=[MinValueValidator(0), MaxValueValidator(10)]
     )
     text = models.TextField()
 
     def __str__(self):
-        return f"{self.user_name} - {self.anime.name} ({self.rating})"
+        return f"{self.user.username} - {self.anime.name} ({self.rating})"
 
     class Meta:
         verbose_name = "User Rating"
         verbose_name_plural = "User Ratings"
-        ordering = ['anime', 'user_name']
+        ordering = ['anime', 'user']
 
 class Anime(models.Model):
     STATUS_CHOICES = [
